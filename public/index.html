@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Powered Query Support for Farmers</title>
+    
+    <link rel="stylesheet" href="style.css"> 
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+</head>
+<body>
+    
+    
+
+    <header>
+        <div class="header-left">
+            <img src="emblem.jpeg" alt="Indian Emblem" class="emblem">
+        </div>
+        <div class="title-container">
+            <h1 data-translate-key="mainTitle">AI Powered Query Support for Farmers</h1>
+            <p data-translate-key="mainSubtitle">"Ask your farming questions and get instant answers & expert advisory"</p>
+        </div>
+        <div class="header-right">
+            <button id="login-btn" class="login-btn" data-translate-key="loginButton">LOGIN</button>
+            <div class="language-dropdown">
+                <button class="dropdown-button">
+                    <span id="selected-lang">English</span>
+                    <svg width="12" height="12" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L9 1" stroke="#4A4A4A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <div class="dropdown-options">
+                    <a href="#" data-lang="en" data-translate-key="langEnglish">English</a>
+                    <a href="#" data-lang="hi" data-translate-key="langHindi">हिन्दी</a>
+                    <a href="#" data-lang="ml" data-translate-key="langMalayalam">മലയാളം</a>
+                </div>
+            </div>
+            <img src="kerala emblem.jpeg    " alt="Kerala Emblem" class="emblem">
+        </div>
+    </header>
+
+    <div class="main-container">
+        <nav class="left-sidebar">
+            <a href="#" class="nav-button active" id="nav-home-button" data-translate-key="navHome">HOME</a>
+            <a href="#" class="nav-button" id="nav-about-button" data-translate-key="navAbout">ABOUT</a>
+            <a href="#" class="nav-button" id="nav-contact-button" data-translate-key="navContact">CONTACT</a>
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLScama47tP_XlVliqNgKbVWk01xfxPC_ZCsgVwGPaDNc48qKMg/viewform?usp=header" target="_blank" class="nav-button" data-translate-key="navQuery">QUERY</a>
+        </nav>
+
+        <main class="main-content">
+            <div class="content-tabs">
+                <button class="tab-button active" data-target="#agriculture-grid" data-translate-key="tabAgri">AGRICULTURE</button>
+                <!-- <button class="tab-button" data-target="#animal-husbandry-grid" data-translate-key="tabAnimal">Animal Husbandry</button> -->
+            </div>
+
+            <div class="grid-container active" id="agriculture-grid">
+                <div class="grid-item" data-key="crop">
+                    <div class="icon-circle">
+                        <img src="rice.jpeg" alt="Crop Advisory">
+                    </div>
+                    <p data-translate-key="gridCrop">CROP ADVISORY</p>
+                </div>
+                <div class="grid-item" data-key="pest">
+                    <div class="icon-circle">
+                         <img src="pest control.jpeg" alt="Pest Prevention">
+                    </div>
+                    <p data-translate-key="gridPest">PEST PREVENTION ADVISORY</p>
+                </div>
+                 <div class="grid-item" data-key="irrigation">
+                    <div class="icon-circle">
+                         <img src="irrigation.jpeg" alt="Irrigation Guide">
+                    </div>
+                    <p data-translate-key="gridIrrigation">IRRIGATION GUIDE</p>
+                </div>
+                 <div class="grid-item" data-key="market">
+                    <div class="icon-circle">
+                         <img src="marketing.jpeg" alt="Market Prices">
+                    </div>
+                    <p data-translate-key="gridMarket">MARKET PRICES UPDATES</p>
+                </div>
+                 <div class="grid-item" data-key="chart">
+                    <div class="icon-circle">
+                         <img src="pyc.png" alt="Previous Years Chart">
+                    </div>
+                    <p data-translate-key="gridChart">PREVIOUS YEARS CHART</p>
+                </div>
+                 <div class="grid-item" data-key="weather">
+                    <div class="icon-circle">
+                         <img src="https://cdn-icons-png.flaticon.com/512/1163/1163624.png" alt="Weather" style="width: 60px; height: 60px; object-fit: contain;">
+                    </div>
+                    <p data-translate-key="gridWeather">WEATHER FORECAST</p>
+                </div>
+            </div>
+
+            <div class="grid-container" id="animal-husbandry-grid">
+                <div class="grid-item" data-key="livestock">
+                    <div class="icon-circle">
+                        <img src="icons/livestock_health.png" alt="Livestock Health">
+                    </div>
+                    <p>LIVESTOCK HEALTH</p>
+                </div>
+                <div class="grid-item" data-key="fodder">
+                    <div class="icon-circle">
+                        <img src="icons/fodder_management.png" alt="Fodder Management">
+                    </div>
+                    <p>FODDER MANAGEMENT</p>
+                </div>
+            </div>
+        </main>
+
+        <aside class="right-sidebar">
+            <div class="search-bar">
+                <input type="search" id="search-input" placeholder="Search">
+                <button id="search-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </button>
+            </div>
+            <!-- <div class="farmer-avatar-card">
+                <img src="images/farmer_avatar.png" alt="Farmer Avatar">
+            </div> -->
+        </aside>
+    </div> <div id="info-display" class="hidden">
+        <h3 id="info-title"></h3>
+        <p id="info-text"></p>
+    </div>
+
+    <section id="about-section" class="hidden">
+        <h2 data-translate-key="aboutTitle">About Us</h2>
+        <p class="about-intro" data-translate-key="aboutIntro">
+            Our platform, AI Powered Query Support for Farmers, is designed to empower farmers with instant, reliable, and personalized agricultural guidance. We combine the strength of Artificial Intelligence with expert agricultural knowledge to address the day-to-day challenges faced by farmers.
+        </p>
+        <p class="about-intro" data-translate-key="aboutSubIntro">
+            Through our system, farmers can ask questions in their own language and receive precise, easy-to-understand answers tailored to their soil, crop, and weather conditions.
+        </p>
+    
+        <h3 data-translate-key="aboutFeaturesTitle">Our Key Features</h3>
+        <ul class="features-list">
+            <li>🌱 <strong data-translate-key="featureCropTitle">Crop Advisory</strong> – <span data-translate-key="featureCropText">Get expert recommendations on crop selection, cultivation practices, and harvesting techniques.</span></li>
+            <li>🐛 <strong data-translate-key="featurePestTitle">Pest Prevention</strong> – <span data-translate-key="featurePestText">Early detection and prevention tips to protect crops from pests and diseases.</span></li>
+            <li>💧 <strong data-translate-key="featureIrrigationTitle">Irrigation Guide</strong> – <span data-translate-key="featureIrrigationText">Smart irrigation strategies based on crop type and weather conditions.</span></li>
+            <li>💹 <strong data-translate-key="featureMarketTitle">Market Prices</strong> – <span data-translate-key="featureMarketText">Stay updated with real-time market prices to maximize profits.</span></li>
+            <li>📊 <strong data-translate-key="featureChartTitle">Previous Years Chart</strong> – <span data-translate-key="featureChartText">Analyze past crop and market trends for better planning.</span></li>
+        </ul>
+    
+        <h3 data-translate-key="aboutWhyUsTitle">Why Choose Us?</h3>
+        <ul class="features-list">
+            <li>🌍 <strong data-translate-key="whyLanguageTitle">Multi-Language Support</strong> – <span data-translate-key="whyLanguageText">Farmers can interact in their local language.</span></li>
+            <li>🤖 <strong data-translate-key="whyChatbotTitle">AI-Powered Chatbot</strong> – <span data-translate-key="whyChatbotText">Provides instant query resolution with expert-backed responses.</span></li>
+            <li>🎯 <strong data-translate-key="whyPersonalizedTitle">Personalized Advisory</strong> – <span data-translate-key="whyPersonalizedText">Recommendations tailored to specific soil, crop, and weather data.</span></li>
+            <li>📷 <strong data-translate-key="whyImageTitle">Image Recognition</strong> – <span data-translate-key="whyImageText">Detect plant diseases and pests via image input.</span></li>
+        </ul>
+    
+        <p class="about-mission" data-translate-key="aboutMission">
+            Our mission is to bridge the gap between technology and agriculture, making farming more efficient, profitable, and sustainable for every farmer.
+        </p>
+    </section>
+
+    <!-- <section id="contact-section" class="hidden">
+        <div class="contact-header">
+            <h2 data-translate-key="contactTitle">We are here for you, contact us at <span class="highlight">anytime</span></h2>
+            <p data-translate-key="contactSubtitle">Have any questions about our services or just want to talk with us? Please reach out.</p>
+        </div>
+        <div class="contact-cards-container">
+            <div class="contact-card">
+                <div class="card-icon chat-icon"></div>
+                <h3 data-translate-key="contactChatTitle">Chat Now</h3>
+                <p data-translate-key="contactChatText">Right from this website</p>
+                <button class="start-chat-button" data-translate-key="contactChatButton">Start chat →</button>
+            </div>
+            <div class="contact-card">
+                <div class="card-icon email-icon"></div>
+                <h3 data-translate-key="contactEmailTitle">Email Us</h3>
+                <p data-translate-key="contactEmailText">From your email app</p>
+                <a href="mailto:singh.angadd755@gmail.com" class="email-link" data-translate-key="contactEmailLink">singh.angadd755@gmail.com</a>
+            </div>
+            <div class="contact-card">
+                <div class="card-icon call-icon"></div>
+                <h3 data-translate-key="contactCallTitle">Call or text us</h3>
+                <p data-translate-key="contactCallText">From your phone</p>
+                <a href="tel:9888090755" class="phone-link" data-translate-key="contactPhoneLink">9888090755</a>
+            </div>
+        </div>
+        <p class="contact-footer-note" data-translate-key="contactFooter">We’ll get back to you as soon as possible. Our team is available 8am-6pm on weekdays.</p>
+    </section> -->
+<section id="contact-section" class="hidden">
+    <div class="contact-header">
+        <h2 data-translate-key="contactTitle">We are here for you, contact us at <span class="highlight">anytime</span></h2>
+        <p data-translate-key="contactSubtitle">Have any questions about our services or just want to talk with us? Please reach out.</p>
+    </div>
+    <div class="contact-cards-container">
+        <div class="contact-card">
+            <div class="card-icon chat-icon"></div>
+            <h3 data-translate-key="contactChatTitle">Chat Now</h3>
+            <p data-translate-key="contactChatText">Right from this website</p>
+            <button class="start-chat-button" data-translate-key="contactChatButton">Start chat →</button>
+        </div>
+        <!-- <div class="contact-card">
+            <div class="card-icon email-icon"></div>
+            <h3 data-translate-key="contactEmailTitle">Email Us</h3>
+            <p data-translate-key="contactEmailText">From your email app</p>
+            <a href="mailto:singh.angadd755@gmail.com" class="email-link" data-translate-key="contactEmailLink">singh.angadd755@gmail.com</a>
+        </div> -->
+        <div class="contact-card">
+    <div class="card-icon email-icon"></div>
+    <h3 data-translate-key="contactEmailTitle">Email Us</h3>
+    <p data-translate-key="contactEmailText">From your email app</p>
+    <!-- <a href="mailto:singh.angadd755@gmail.com" class="email-link" data-translate-key="contactEmailLink">Send us an email</a> -->
+     <!-- <a href="mailto:singh.angadd755@gmail.com" class="email-link" data-translate-key="contactEmailLink">Email Us</a> -->
+<!-- <a href="mailto:singh.angadd755@gmail.com" class="email-link" data-translate-key="contactEmailLink">Send us an email</a> -->
+ <a href="mailto:singh.angadd755@gmail.com" class="start-chat-button" data-translate-key="contactEmailLink">Send us an email →</a>
+    </div>
+        <div class="contact-card">
+            <div class="card-icon social-icon"></div>
+            <h3 data-translate-key="contactSocialTitle">Social Media</h3>
+            <p data-translate-key="contactSocialText">Connect instantly</p>
+            <div class="social-icons">
+                <a href="#" class="social-link facebook"><img src="facebook.png " alt="Facebook"></a>
+                <a href="#" class="social-link twitter"><img src="x.webp" alt="Twitter"></a>
+                <a href="#" class="social-link instagram"><img src="instagram.png" alt="Instagram"></a>
+            </div>
+        </div>
+    </div>
+    <p class="contact-footer-note" data-translate-key="contactFooter">We'll get back to you as soon as possible. Our team is available 8am-6pm on weekdays.</p>
+</section>
+
+<!-- Weather Modal -->
+<section id="weather-section" class="hidden">
+    <div class="weather-container">
+        <div class="weather-header">
+            <h2 data-translate-key="weatherTitle">Weather Forecast</h2>
+            <button class="weather-close">&times;</button>
+        </div>
+        
+        <div class="weather-search">
+            <input type="text" id="weather-city-input" placeholder="Enter city name..." data-translate-key="weatherPlaceholder">
+            <button id="weather-search-btn" data-translate-key="weatherSearch">Search</button>
+            <button id="weather-location-btn" data-translate-key="weatherLocation">Use My Location</button>
+        </div>
+        
+        <div class="weather-content">
+            <div id="weather-current" class="weather-card">
+                <div class="weather-main">
+                    <div class="weather-icon">
+                        <img id="weather-icon-img" src="" alt="Weather Icon">
+                    </div>
+                    <div class="weather-temp">
+                        <span id="weather-temp-value">--</span>°C
+                    </div>
+                    <div class="weather-desc">
+                        <span id="weather-desc">--</span>
+                    </div>
+                </div>
+                <div class="weather-details">
+                    <div class="weather-detail-item">
+                        <span class="detail-label">Feels Like</span>
+                        <span id="weather-feels-like">--°C</span>
+                    </div>
+                    <div class="weather-detail-item">
+                        <span class="detail-label">Humidity</span>
+                        <span id="weather-humidity">--%</span>
+                    </div>
+                    <div class="weather-detail-item">
+                        <span class="detail-label">Wind Speed</span>
+                        <span id="weather-wind">-- m/s</span>
+                    </div>
+                    <div class="weather-detail-item">
+                        <span class="detail-label">Pressure</span>
+                        <span id="weather-pressure">-- hPa</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="weather-forecast" class="weather-forecast">
+                <h3 data-translate-key="weatherForecastTitle">5-Day Forecast</h3>
+                <div id="forecast-days" class="forecast-days">
+                    <!-- Forecast days will be populated here -->
+                </div>
+            </div>
+            
+            <div id="weather-advice" class="weather-advice">
+                <h3 data-translate-key="weatherAdviceTitle">Agricultural Advice</h3>
+                <div id="advice-list" class="advice-list">
+                    <!-- Agricultural advice will be populated here -->
+                </div>
+            </div>
+        </div>
+        
+        <div id="weather-error" class="weather-error hidden">
+            <p data-translate-key="weatherError">Unable to fetch weather data. Please check your internet connection and try again.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Image Recognition Modal for Pest Detection -->
+<section id="image-recognition-section" class="hidden">
+    <div class="image-recognition-container">
+        <div class="image-recognition-header">
+            <h2 data-translate-key="imageRecognitionTitle">Pest & Disease Detection</h2>
+            <button class="image-recognition-close">&times;</button>
+        </div>
+        
+        <div class="image-recognition-content">
+            <div class="upload-area" id="upload-area">
+                <div class="upload-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21,15 16,10 5,21"></polyline>
+                    </svg>
+                </div>
+                <h3 data-translate-key="uploadTitle">Upload Plant Image</h3>
+                <p data-translate-key="uploadSubtitle">Take a photo or upload an image of your plant to detect pests and diseases</p>
+                <input type="file" id="image-upload" accept="image/*" capture="environment">
+                <button class="upload-btn" data-translate-key="uploadButton">Choose Image</button>
+            </div>
+            
+            <div class="image-preview" id="image-preview" style="display: none;">
+                <img id="preview-img" src="" alt="Plant Image">
+                <div class="image-actions">
+                    <button id="analyze-btn" class="analyze-btn" data-translate-key="analyzeButton">Analyze Image</button>
+                    <button id="change-image-btn" class="change-image-btn" data-translate-key="changeImageButton">Change Image</button>
+                </div>
+            </div>
+            
+            <div class="analysis-results" id="analysis-results" style="display: none;">
+                <h3 data-translate-key="analysisResultsTitle">Analysis Results</h3>
+                <div class="results-content" id="results-content">
+                    <!-- Results will be populated here -->
+                </div>
+            </div>
+            
+            <div class="loading-spinner" id="loading-spinner" style="display: none;">
+                <div class="spinner"></div>
+                <p data-translate-key="analyzingText">Analyzing your image...</p>
+            </div>
+        </div>
+        
+        <div id="image-error" class="image-error hidden">
+            <p data-translate-key="imageError">Unable to analyze image. Please try again with a clearer photo.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Login Modal -->
+<section id="login-section" class="hidden">
+    <div class="login-container">
+        <div class="login-header">
+            <h2 data-translate-key="loginTitle">Login to Your Account</h2>
+            <button class="login-close">&times;</button>
+        </div>
+        
+        <div class="login-content">
+            <form id="login-form" class="login-form">
+                <div class="form-group">
+                    <label for="login-email" data-translate-key="emailLabel">Email Address</label>
+                    <input type="email" id="login-email" name="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="login-password" data-translate-key="passwordLabel">Password</label>
+                    <input type="password" id="login-password" name="password" required>
+                </div>
+                
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" id="remember-me" name="remember">
+                        <span data-translate-key="rememberMe">Remember me</span>
+                    </label>
+                    <a href="#" class="forgot-password" data-translate-key="forgotPassword">Forgot Password?</a>
+                </div>
+                
+                <button type="submit" class="login-submit-btn" data-translate-key="loginSubmit">LOGIN</button>
+                
+                <div class="login-divider">
+                    <span data-translate-key="orText">OR</span>
+                </div>
+                
+                <div class="social-login">
+                    <button type="button" class="social-btn google-btn" data-translate-key="loginWithGoogle">Login with Google</button>
+                    <button type="button" class="social-btn facebook-btn" data-translate-key="loginWithFacebook">Login with Facebook</button>
+                </div>
+                
+                <div class="login-footer">
+                    <p data-translate-key="noAccountText">Don't have an account? <a href="#" id="signup-link" data-translate-key="signupLink">Sign up here</a></p>
+                </div>
+            </form>
+        </div>
+        
+        <div id="login-error" class="login-error hidden">
+            <p data-translate-key="loginError">Invalid email or password. Please try again.</p>
+        </div>
+    </div>
+</section>
+    <!-- <div class="chat-container">
+        <div class="chat-bubble">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        </div> -->
+        <div class="chat-window">
+            <div class="chat-header">
+                <h3 data-translate-key="chatHeader">AI Assistant</h3>
+                <button class="chat-close">&times;</button>
+            </div>
+            <div class="chat-messages"></div>
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" placeholder="Type your question...">
+                <button id="voice-input-btn" class="voice-btn" title="Voice Input">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+                </button>
+                <button id="voice-output-btn" class="voice-btn" title="Voice Output">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                </button>
+                <button id="chat-send-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+<!-- <div class="chat-container">
+        <div class="chat-bubble">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        </div> -->
+        <div class="chat-bar" id="chat-bar">
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+    <p>Ask me anything...</p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<script src="script.js" defer></script>
+    
+    <!-- ====== CHATBOT MODAL (ADD THIS) ====== -->
+<!-- <div id="chat-modal" class="chat-modal hidden">
+  <div class="chat-window">
+    <div class="chat-header">
+      <strong>Agri Assistant</strong>
+      <button id="chat-close">✕</button>
+    </div>
+    <div id="chat-messages" class="chat-messages"></div>
+    <form id="chat-form" class="chat-form">
+      <input id="chat-input" type="text" placeholder="Ask about crops, pests, irrigation..." autocomplete="off"/>
+      <button type="submit">Send</button>
+    </form>
+  </div>
+</div> -->
+
+<!-- include chat logic -->
+<script src="chat-client.js" defer></script>
+
+</body>
+</html>
+</body>
+</html>

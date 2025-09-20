@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Advisory - AI Powered Query Support for Farmers</title>
+    
+    <link rel="stylesheet" href="style.css"> 
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <img src="emblem.jpeg" alt="Indian Emblem" class="emblem">
+        </div>
+        <div class="title-container">
+            <h1 data-translate-key="mainTitle">AI Powered Query Support for Farmers</h1>
+            <p data-translate-key="mainSubtitle">"Ask your farming questions and get instant answers & expert advisory"</p>
+        </div>
+        <div class="header-right">
+            <button id="login-btn" class="login-btn" data-translate-key="loginButton">LOGIN</button>
+            <div class="language-dropdown">
+                <button class="dropdown-button">
+                    <span id="selected-lang">English</span>
+                    <svg width="12" height="12" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L9 1" stroke="#4A4A4A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <div class="dropdown-options">
+                    <a href="#" data-lang="en" data-translate-key="langEnglish">English</a>
+                    <a href="#" data-lang="hi" data-translate-key="langHindi">हिन्दी</a>
+                    <a href="#" data-lang="ml" data-translate-key="langMalayalam">മലയാളം</a>
+                </div>
+            </div>
+            <img src="kerala emblem.jpeg" alt="Kerala Emblem" class="emblem">
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="crop-advisory-container">
+            <div class="crop-advisory-header">
+                <h2 data-translate-key="cropAdvisoryTitle">🌱 Crop Advisory with AI Prediction</h2>
+                <p data-translate-key="cropAdvisorySubtitle">Get personalized crop recommendations based on your soil conditions and location</p>
+                <button id="back-to-home" class="back-btn">← Back to Home</button>
+            </div>
+            
+            <div class="crop-form-container">
+                <form id="crop-advisory-form" class="crop-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="location" data-translate-key="locationLabel">Location</label>
+                            <input type="text" id="location" name="location" placeholder="Enter your city/region" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="crop-type" data-translate-key="cropTypeLabel">Preferred Crop Type</label>
+                            <select id="crop-type" name="cropType">
+                                <option value="rice">Rice</option>
+                                <option value="wheat">Wheat</option>
+                                <option value="maize">Maize</option>
+                                <option value="vegetables">Vegetables</option>
+                                <option value="fruits">Fruits</option>
+                                <option value="pulses">Pulses</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="soil-ph" data-translate-key="soilPhLabel">Soil pH (6.0 - 8.0)</label>
+                            <input type="number" id="soil-ph" name="soilPh" min="6.0" max="8.0" step="0.1" value="6.5" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="nitrogen" data-translate-key="nitrogenLabel">Nitrogen (N) mg/kg</label>
+                            <input type="number" id="nitrogen" name="nitrogen" min="0" max="1000" step="1" value="50" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="phosphorus" data-translate-key="phosphorusLabel">Phosphorus (P) mg/kg</label>
+                            <input type="number" id="phosphorus" name="phosphorus" min="0" max="1000" step="1" value="30" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="potassium" data-translate-key="potassiumLabel">Potassium (K) mg/kg</label>
+                            <input type="number" id="potassium" name="potassium" min="0" max="1000" step="1" value="40" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="temperature" data-translate-key="temperatureLabel">Average Temperature (°C)</label>
+                            <input type="number" id="temperature" name="temperature" min="0" max="50" value="25" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="humidity" data-translate-key="humidityLabel">Humidity (%)</label>
+                            <input type="number" id="humidity" name="humidity" min="0" max="100" value="60" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="rainfall" data-translate-key="rainfallLabel">Annual Rainfall (mm)</label>
+                            <input type="number" id="rainfall" name="rainfall" min="0" max="5000" value="1000" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="area" data-translate-key="areaLabel">Farm Area (acres)</label>
+                            <input type="number" id="area" name="area" min="0.1" max="1000" step="0.1" value="1.0" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary" data-translate-key="getRecommendations">Get AI Recommendations</button>
+                        <button type="button" id="reset-form" class="btn-secondary" data-translate-key="resetForm">Reset Form</button>
+                    </div>
+                </form>
+                
+                <div id="crop-results" class="crop-results hidden">
+                    <h3 data-translate-key="recommendationsTitle">AI Recommendations</h3>
+                    <div id="crop-predictions" class="predictions-container"></div>
+                    <div id="crop-advice" class="advice-container"></div>
+                    <button type="button" id="new-analysis" class="btn-primary" data-translate-key="newAnalysis">New Analysis</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="crop-advisory.js" defer></script>
+</body>
+</html>
+
