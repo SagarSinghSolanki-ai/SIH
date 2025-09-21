@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Irrigation Guide - AI Powered Query Support for Farmers</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        .irrigation-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .irrigation-header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .irrigation-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .irrigation-header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .prediction-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .predict-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .predict-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .predict-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-top: 20px;
+            display: none;
+        }
+
+        .result-card.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .result-content {
+            text-align: center;
+        }
+
+        .prediction-text {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .confidence-text {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .recommendation {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .recommendation h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .recommendation ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .recommendation li {
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .back-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #5a6268;
+            transform: translateY(-1px);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .crop-info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196f3;
+        }
+
+        .crop-info h4 {
+            margin: 0 0 10px 0;
+            color: #1976d2;
+        }
+
+        .crop-info p {
+            margin: 0;
+            color: #424242;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .irrigation-header h1 {
+                font-size: 2rem;
+            }
+            
+            .irrigation-container {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="irrigation-container">
+        <button class="back-btn" onclick="window.close()">← Back to Main Page</button>
+        
+        <div class="irrigation-header">
+            <h1>🌱 Irrigation Guide</h1>
+            <p>Get AI-powered irrigation recommendations for your crops</p>
+        </div>
+
+        <div class="prediction-card">
+            <div class="crop-info">
+                <h4>💡 How it works</h4>
+                <p>Enter your crop details and environmental conditions to get personalized irrigation recommendations. Our AI model analyzes soil moisture, temperature, humidity, and rainfall to determine if your crops need irrigation.</p>
+            </div>
+
+            <form id="irrigationForm">
+                <div class="form-group">
+                    <label for="cropType">🌾 Crop Type</label>
+                    <select id="cropType" required>
+                        <option value="">Select a crop type</option>
+                        <option value="Rice">Rice</option>
+                        <option value="Wheat">Wheat</option>
+                        <option value="Maize">Maize</option>
+                        <option value="Sugarcane">Sugarcane</option>
+                        <option value="Cotton">Cotton</option>
+                        <option value="Potato">Potato</option>
+                        <option value="Tomato">Tomato</option>
+                        <option value="Onion">Onion</option>
+                        <option value="Chili">Chili</option>
+                        <option value="Cabbage">Cabbage</option>
+                        <option value="Carrot">Carrot</option>
+                        <option value="Spinach">Spinach</option>
+                        <option value="Lettuce">Lettuce</option>
+                        <option value="Cucumber">Cucumber</option>
+                        <option value="Pumpkin">Pumpkin</option>
+                        <option value="Beans">Beans</option>
+                        <option value="Peas">Peas</option>
+                        <option value="Corn">Corn</option>
+                        <option value="Barley">Barley</option>
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="soilMoisture">💧 Soil Moisture (%)</label>
+                        <input type="number" id="soilMoisture" min="0" max="100" step="0.1" placeholder="e.g., 45.5" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="temperature">🌡️ Temperature (°C)</label>
+                        <input type="number" id="temperature" min="-10" max="50" step="0.1" placeholder="e.g., 25.5" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="humidity">💨 Humidity (%)</label>
+                        <input type="number" id="humidity" min="0" max="100" step="0.1" placeholder="e.g., 65.0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="rainfall">🌧️ Rainfall (mm)</label>
+                        <input type="number" id="rainfall" min="0" max="500" step="0.1" placeholder="e.g., 12.5" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="predict-btn" id="predictBtn">
+                    🔮 Get Irrigation Recommendation
+                </button>
+            </form>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Analyzing your data...</p>
+            </div>
+        </div>
+
+        <div class="result-card" id="resultCard">
+            <div class="result-title">📊 Prediction Result</div>
+            <div class="result-content">
+                <div class="prediction-text" id="predictionText"></div>
+                <div class="confidence-text" id="confidenceText"></div>
+                
+                <div class="recommendation" id="recommendation">
+                    <h3>💡 Recommendations</h3>
+                    <ul id="recommendationList"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="irrigation-guide.js"></script>
+</body>
+</html>

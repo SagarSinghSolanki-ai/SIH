@@ -537,6 +537,173 @@ def yield_prediction():
         logger.error(f"Error in yield prediction: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/predict-irrigation', methods=['POST'])
+def predict_irrigation():
+    """Predict irrigation requirement using the trained neural network model"""
+    try:
+        data = request.get_json()
+        
+        if not data:
+            return jsonify({'error': 'No JSON data provided'}), 400
+        
+        # Extract input parameters
+        crop_type = data.get('crop_type')
+        soil_moisture = data.get('soil_moisture')
+        temperature = data.get('temperature')
+        humidity = data.get('humidity')
+        rainfall = data.get('rainfall')
+        
+        # Validate required parameters
+        if None in [crop_type, soil_moisture, temperature, humidity, rainfall]:
+            return jsonify({'error': 'All parameters are required: crop_type, soil_moisture, temperature, humidity, rainfall'}), 400
+        
+        # Validate data types and ranges
+        try:
+            soil_moisture = float(soil_moisture)
+            temperature = float(temperature)
+            humidity = float(humidity)
+            rainfall = float(rainfall)
+        except (ValueError, TypeError):
+            return jsonify({'error': 'All numeric parameters must be valid numbers'}), 400
+        
+        # Validate ranges
+        if not (0 <= soil_moisture <= 100):
+            return jsonify({'error': 'Soil moisture must be between 0 and 100'}), 400
+        if not (-10 <= temperature <= 50):
+            return jsonify({'error': 'Temperature must be between -10 and 50'}), 400
+        if not (0 <= humidity <= 100):
+            return jsonify({'error': 'Humidity must be between 0 and 100'}), 400
+        if not (0 <= rainfall <= 500):
+            return jsonify({'error': 'Rainfall must be between 0 and 500'}), 400
+        
+        # Check if irrigation model is loaded
+        if 'irrigation_model' not in model_manager.models:
+            return jsonify({'error': 'Irrigation prediction model not loaded. Please load the model first.'}), 404
+        
+        # Check if scaler and label encoder are loaded
+        if 'irrigation_scaler' not in model_manager.models:
+            return jsonify({'error': 'Irrigation scaler not loaded. Please load the scaler first.'}), 404
+        
+        if 'irrigation_label_encoder' not in model_manager.models:
+            return jsonify({'error': 'Irrigation label encoder not loaded. Please load the label encoder first.'}), 404
+        
+        # Encode crop type
+        label_encoder = model_manager.models['irrigation_label_encoder']
+        try:
+            crop_encoded = label_encoder.transform([crop_type])[0]
+        except ValueError:
+            return jsonify({'error': f'Unknown crop type: {crop_type}. Please use a valid crop type.'}), 400
+        
+        # Prepare input data
+        input_data = np.array([[crop_encoded, soil_moisture, temperature, humidity, rainfall]])
+        
+        # Scale the input data
+        scaler = model_manager.models['irrigation_scaler']
+        input_scaled = scaler.transform(input_data)
+        
+        # Make prediction
+        model = model_manager.models['irrigation_model']
+        prediction_prob = model.predict(input_scaled, verbose=0)[0][0]
+        
+        # Determine if irrigation is needed (threshold = 0.5)
+        irrigation_needed = bool(prediction_prob > 0.5)
+        confidence = float(prediction_prob)
+        
+        # Get recommendations based on prediction
+        recommendations = get_irrigation_recommendations(
+            crop_type, soil_moisture, temperature, humidity, rainfall, 
+            irrigation_needed, confidence
+        )
+        
+        return jsonify({
+            'success': True,
+            'irrigation_needed': irrigation_needed,
+            'confidence': confidence,
+            'probability': prediction_prob,
+            'input_data': {
+                'crop_type': crop_type,
+                'soil_moisture': soil_moisture,
+                'temperature': temperature,
+                'humidity': humidity,
+                'rainfall': rainfall
+            },
+            'recommendations': recommendations,
+            'timestamp': datetime.now().isoformat()
+        })
+        
+    except Exception as e:
+        logger.error(f"Error in irrigation prediction: {str(e)}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        return jsonify({'error': str(e), 'success': False}), 500
+
+def get_irrigation_recommendations(crop_type, soil_moisture, temperature, humidity, rainfall, irrigation_needed, confidence):
+    """Generate irrigation recommendations based on prediction and conditions"""
+    recommendations = []
+    
+    if irrigation_needed:
+        recommendations.append("🌊 Irrigation is recommended for your crops")
+        
+        if soil_moisture < 30:
+            recommendations.append("💧 Soil moisture is critically low - immediate irrigation needed")
+        elif soil_moisture < 50:
+            recommendations.append("⚠️ Soil moisture is below optimal levels")
+        
+        if temperature > 35:
+            recommendations.append("🌡️ High temperature increases water demand - consider more frequent irrigation")
+        
+        if humidity < 40:
+            recommendations.append("💨 Low humidity increases evaporation - water early morning or evening")
+        
+        if rainfall < 10:
+            recommendations.append("🌧️ Limited rainfall - rely on irrigation for water supply")
+        
+        # Crop-specific recommendations
+        crop_recommendations = {
+            'Rice': "🌾 Rice requires consistent water - maintain 2-3 inches of standing water",
+            'Wheat': "🌾 Wheat needs moderate irrigation - avoid overwatering during grain filling",
+            'Tomato': "🍅 Tomatoes prefer deep, infrequent watering - avoid wetting leaves",
+            'Cotton': "🌿 Cotton needs careful water management - avoid water stress during flowering",
+            'Maize': "🌽 Maize needs regular watering during tasseling and silking stages",
+            'Sugarcane': "🎋 Sugarcane requires heavy irrigation - maintain consistent soil moisture",
+            'Potato': "🥔 Potatoes need consistent moisture - avoid water stress during tuber formation",
+            'Onion': "🧅 Onions need moderate irrigation - reduce watering as bulbs mature",
+            'Chili': "🌶️ Chili peppers need regular watering - avoid water stress during flowering",
+            'Cabbage': "🥬 Cabbage needs consistent moisture - avoid overwatering to prevent splitting"
+        }
+        
+        if crop_type in crop_recommendations:
+            recommendations.append(crop_recommendations[crop_type])
+        
+        recommendations.append("⏰ Best irrigation time: Early morning (6-8 AM) or evening (6-8 PM)")
+        recommendations.append("💧 Water deeply and slowly to encourage deep root growth")
+        
+    else:
+        recommendations.append("✅ No irrigation needed at this time")
+        
+        if soil_moisture > 70:
+            recommendations.append("💧 Soil moisture is adequate - avoid overwatering")
+        
+        if rainfall > 20:
+            recommendations.append("🌧️ Recent rainfall provides sufficient moisture")
+        
+        recommendations.append("👀 Monitor soil moisture regularly - check again in 2-3 days")
+        recommendations.append("🌱 Focus on other crop management practices like pest control and fertilization")
+    
+    # General recommendations
+    recommendations.append("📊 Check soil moisture 2-3 times per week")
+    recommendations.append("🌡️ Monitor weather forecasts for rain predictions")
+    recommendations.append("📈 Keep records of irrigation schedules and crop response")
+    
+    # Confidence-based recommendations
+    if confidence > 0.8:
+        recommendations.append("🎯 High confidence prediction - follow recommendations closely")
+    elif confidence > 0.6:
+        recommendations.append("⚠️ Moderate confidence - monitor conditions and adjust as needed")
+    else:
+        recommendations.append("❓ Low confidence - consider additional soil testing or expert consultation")
+    
+    return recommendations
+
 if __name__ == '__main__':
     # Create models directory if it doesn't exist
     os.makedirs('models', exist_ok=True)
@@ -568,11 +735,52 @@ if __name__ == '__main__':
     except Exception as e:
         logger.error(f"Error loading pest model: {str(e)}")
     
+    # Load irrigation model and components on startup
+    try:
+        # Load irrigation model
+        irrigation_model_path = 'models/irrigation_model_complete.h5'
+        if os.path.exists(irrigation_model_path):
+            model_manager.load_model('irrigation_model', irrigation_model_path, 'tensorflow')
+            logger.info("Irrigation model loaded successfully")
+        else:
+            logger.warning("Irrigation model not found at models/irrigation_model_complete.h5")
+        
+        # Load irrigation scaler
+        irrigation_scaler_path = 'models/scaler.pkl'
+        if os.path.exists(irrigation_scaler_path):
+            scaler = joblib.load(irrigation_scaler_path)
+            model_manager.models['irrigation_scaler'] = scaler
+            model_manager.model_info['irrigation_scaler'] = {
+                'path': irrigation_scaler_path,
+                'type': 'scaler',
+                'loaded_at': datetime.now().isoformat()
+            }
+            logger.info("Irrigation scaler loaded successfully")
+        else:
+            logger.warning("Irrigation scaler not found at models/scaler.pkl")
+        
+        # Load irrigation label encoder
+        irrigation_label_encoder_path = 'models/label_encoder.pkl'
+        if os.path.exists(irrigation_label_encoder_path):
+            label_encoder = joblib.load(irrigation_label_encoder_path)
+            model_manager.models['irrigation_label_encoder'] = label_encoder
+            model_manager.model_info['irrigation_label_encoder'] = {
+                'path': irrigation_label_encoder_path,
+                'type': 'label_encoder',
+                'loaded_at': datetime.now().isoformat()
+            }
+            logger.info("Irrigation label encoder loaded successfully")
+        else:
+            logger.warning("Irrigation label encoder not found at models/label_encoder.pkl")
+            
+    except Exception as e:
+        logger.error(f"Error loading irrigation model components: {str(e)}")
+    
     # Load any other existing models on startup
     models_dir = 'models'
     if os.path.exists(models_dir):
         for file in os.listdir(models_dir):
-            if file.endswith(('.pkl', '.joblib', '.h5', '.pth')) and file not in ['pest_model.h5', 'pest_model_metadata.pkl']:
+            if file.endswith(('.pkl', '.joblib', '.h5', '.pth')) and file not in ['pest_model.h5', 'pest_model_metadata.pkl', 'irrigation_model_complete.h5', 'scaler.pkl', 'label_encoder.pkl']:
                 model_name = file.split('.')[0]
                 model_path = os.path.join(models_dir, file)
                 model_type = 'sklearn' if file.endswith(('.pkl', '.joblib')) else 'tensorflow' if file.endswith('.h5') else 'pytorch'

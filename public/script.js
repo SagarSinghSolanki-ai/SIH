@@ -520,6 +520,12 @@ mainContent.addEventListener('mouseleave', () => {
                     return;
                 }
                 
+                // Special handling for irrigation guide - open in new page
+                if (key === 'irrigation') {
+                    window.open('irrigation-guide.html', '_blank');
+                    return;
+                }
+                
                 const content = translations[currentLanguage].infoDisplayContent[key];
                 
                 if (content) {
