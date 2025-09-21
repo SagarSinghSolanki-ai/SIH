@@ -514,6 +514,12 @@ mainContent.addEventListener('mouseleave', () => {
                     return;
                 }
                 
+                // Special handling for pest detection - open in new page
+                if (key === 'pest') {
+                    window.open('pest-detection.html', '_blank');
+                    return;
+                }
+                
                 const content = translations[currentLanguage].infoDisplayContent[key];
                 
                 if (content) {
@@ -1223,6 +1229,7 @@ mainContent.addEventListener('mouseleave', () => {
             updateVoiceTranslations();
             currentLanguage = lang; // Update current language for voice
         };
+
 
 
         // --- INITIALIZATION ---

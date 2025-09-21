@@ -1,115 +1,126 @@
 """
-Example usage of the Agricultural AI Model API
-This script demonstrates how to interact with the Flask API
+Example usage of the pest detection model
+This file demonstrates how to use the trained pest detection model
 """
 
-import requests
-import json
+import tensorflow as tf
+import numpy as np
+from PIL import Image
+import pickle
+import os
 
-# API base URL
-BASE_URL = "http://localhost:5000"
+def load_model_and_metadata():
+    """Load the trained model and metadata"""
+    try:
+        # Load the model
+        model = tf.keras.models.load_model('models/pest_model.h5')
+        print("✅ Model loaded successfully")
+        
+        # Load metadata
+        with open('models/pest_model_metadata.pkl', 'rb') as f:
+            metadata = pickle.load(f)
+        
+        class_names = metadata.get('class_names', [
+            'aphid', 'armyworm', 'beetle', 'caterpillar', 'grasshopper',
+            'leafhopper', 'mite', 'thrips', 'whitefly', 'healthy'
+        ])
+        
+        print("✅ Metadata loaded successfully")
+        print(f"Classes: {class_names}")
+        
+        return model, class_names
+        
+    except Exception as e:
+        print(f"❌ Error loading model: {e}")
+        return None, None
 
-def test_api():
-    """Test the API endpoints"""
-    
-    print("=== Agricultural AI Model API Test ===\n")
-    
-    # 1. Health check
-    print("1. Health Check:")
-    response = requests.get(f"{BASE_URL}/api/health")
-    print(f"Status: {response.status_code}")
-    print(f"Response: {response.json()}\n")
-    
-    # 2. Load a model (example - you need to have a model file)
-    print("2. Loading Model:")
-    load_data = {
-        "model_name": "crop_model",
-        "model_path": "models/crop_model.pkl",  # Replace with your actual model path
-        "model_type": "sklearn"
-    }
-    
-    # Note: This will fail if the model file doesn't exist
+def preprocess_image(image_path, target_size=(128, 128)):
+    """Preprocess an image for prediction"""
     try:
-        response = requests.post(f"{BASE_URL}/api/load-model", json=load_data)
-        print(f"Status: {response.status_code}")
-        print(f"Response: {response.json()}\n")
+        # Load and resize image
+        image = Image.open(image_path)
+        image = image.convert('RGB')
+        image = image.resize(target_size)
+        
+        # Convert to numpy array and normalize
+        image_array = np.array(image) / 255.0
+        
+        # Add batch dimension
+        image_array = np.expand_dims(image_array, axis=0)
+        
+        return image_array
+        
     except Exception as e:
-        print(f"Error loading model: {e}\n")
-    
-    # 3. List loaded models
-    print("3. List Models:")
-    response = requests.get(f"{BASE_URL}/api/models")
-    print(f"Status: {response.status_code}")
-    print(f"Response: {response.json()}\n")
-    
-    # 4. Make a prediction (example)
-    print("4. Making Prediction:")
-    prediction_data = {
-        "model_name": "crop_model",
-        "input_data": {
-            "soil_ph": 6.5,
-            "rainfall": 1200,
-            "temperature": 25,
-            "humidity": 70
-        }
-    }
-    
-    try:
-        response = requests.post(f"{BASE_URL}/api/predict", json=prediction_data)
-        print(f"Status: {response.status_code}")
-        print(f"Response: {response.json()}\n")
-    except Exception as e:
-        print(f"Error making prediction: {e}\n")
-    
-    # 5. Agricultural specific endpoints
-    print("5. Crop Prediction:")
-    crop_data = {
-        "soil_ph": 6.5,
-        "rainfall": 1200,
-        "temperature": 25,
-        "humidity": 70,
-        "soil_type": "clay",
-        "region": "tropical"
-    }
-    
-    try:
-        response = requests.post(f"{BASE_URL}/api/crop-prediction", json=crop_data)
-        print(f"Status: {response.status_code}")
-        print(f"Response: {response.json()}\n")
-    except Exception as e:
-        print(f"Error in crop prediction: {e}\n")
+        print(f"❌ Error preprocessing image: {e}")
+        return None
 
-def create_sample_model():
-    """Create a sample model for testing"""
-    from sklearn.ensemble import RandomForestClassifier
-    from sklearn.datasets import make_classification
-    import joblib
-    import os
+def predict_pest(model, image_array, class_names):
+    """Make prediction on preprocessed image"""
+    try:
+        # Get predictions
+        predictions = model.predict(image_array)
+        probabilities = predictions[0]
+        
+        # Get top 3 predictions
+        top_indices = np.argsort(probabilities)[-3:][::-1]
+        top_predictions = []
+        
+        for idx in top_indices:
+            top_predictions.append({
+                'class': class_names[idx],
+                'confidence': float(probabilities[idx])
+            })
+        
+        return top_predictions
+        
+    except Exception as e:
+        print(f"❌ Error making prediction: {e}")
+        return None
+
+def main():
+    """Main function to demonstrate usage"""
+    print("🚀 Pest Detection Model Example Usage")
+    print("=" * 50)
     
-    print("Creating sample model...")
+    # Load model and metadata
+    model, class_names = load_model_and_metadata()
+    if model is None:
+        print("❌ Failed to load model. Exiting...")
+        return
     
-    # Create sample data
-    X, y = make_classification(n_samples=100, n_features=4, n_classes=3, random_state=42)
+    # Example image path (replace with actual image path)
+    image_path = "path/to/your/test/image.jpg"
     
-    # Train a simple model
-    model = RandomForestClassifier(n_estimators=10, random_state=42)
-    model.fit(X, y)
+    if not os.path.exists(image_path):
+        print(f"❌ Image not found: {image_path}")
+        print("Please provide a valid image path")
+        return
     
-    # Create models directory if it doesn't exist
-    os.makedirs('models', exist_ok=True)
+    # Preprocess image
+    print(f"📸 Processing image: {image_path}")
+    image_array = preprocess_image(image_path)
+    if image_array is None:
+        print("❌ Failed to preprocess image")
+        return
     
-    # Save the model
-    model_path = 'models/sample_crop_model.pkl'
-    joblib.dump(model, model_path)
-    print(f"Sample model saved to: {model_path}")
+    # Make prediction
+    print("🔍 Making prediction...")
+    predictions = predict_pest(model, image_array, class_names)
+    if predictions is None:
+        print("❌ Failed to make prediction")
+        return
     
-    return model_path
+    # Display results
+    print("\n📊 Prediction Results:")
+    print("-" * 30)
+    for i, pred in enumerate(predictions, 1):
+        confidence_percent = pred['confidence'] * 100
+        print(f"{i}. {pred['class'].upper()}: {confidence_percent:.2f}%")
+    
+    # Get the top prediction
+    top_prediction = predictions[0]
+    print(f"\n🎯 Top Prediction: {top_prediction['class'].upper()}")
+    print(f"   Confidence: {top_prediction['confidence']*100:.2f}%")
 
 if __name__ == "__main__":
-    # Create a sample model first
-    model_path = create_sample_model()
-    
-    # Test the API
-    test_api()
-
-
+    main()

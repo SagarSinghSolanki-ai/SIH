@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pest & Disease Detection - AI Powered Query Support for Farmers</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .pest-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .pest-header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .pest-header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .pest-header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .pest-detection-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .upload-area {
+            text-align: center;
+            padding: 60px 40px;
+            border: 3px dashed #4CAF50;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin-bottom: 30px;
+        }
+
+        .upload-area:hover {
+            border-color: #45a049;
+            background: linear-gradient(135deg, #e9ecef, #f8f9fa);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.2);
+        }
+
+        .upload-icon {
+            color: #4CAF50;
+            margin-bottom: 30px;
+            opacity: 0.7;
+        }
+
+        .upload-area h3 {
+            color: #333;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 0 0 15px 0;
+        }
+
+        .upload-area p {
+            color: #666;
+            font-size: 1.1rem;
+            margin: 0 0 30px 0;
+            line-height: 1.5;
+        }
+
+        #image-upload {
+            display: none;
+        }
+
+        .upload-btn {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .upload-btn:hover {
+            background: linear-gradient(135deg, #45a049, #4CAF50);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+        }
+
+        .image-preview {
+            text-align: center;
+            margin-bottom: 30px;
+            display: none;
+        }
+
+        .image-preview img {
+            max-width: 100%;
+            max-height: 400px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            margin-bottom: 25px;
+            border: 3px solid #e9ecef;
+        }
+
+        .image-actions {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .analyze-btn, .change-image-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .analyze-btn {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            color: white;
+        }
+
+        .analyze-btn:hover {
+            background: linear-gradient(135deg, #1976D2, #2196F3);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(33, 150, 243, 0.3);
+        }
+
+        .change-image-btn {
+            background: linear-gradient(135deg, #FF9800, #F57C00);
+            color: white;
+        }
+
+        .change-image-btn:hover {
+            background: linear-gradient(135deg, #F57C00, #FF9800);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 152, 0, 0.3);
+        }
+
+        .loading-spinner {
+            text-align: center;
+            padding: 60px 20px;
+            display: none;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid #e9ecef;
+            border-top: 6px solid #4CAF50;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 25px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-spinner p {
+            color: #333;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin: 0;
+        }
+
+        .analysis-results {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            margin-top: 25px;
+            display: none;
+        }
+
+        .analysis-results h3 {
+            color: #333;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 1.8rem;
+            margin: 0 0 25px 0;
+            text-align: center;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .result-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-left: 5px solid #4CAF50;
+            margin-bottom: 20px;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .result-header h4 {
+            color: #333;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .confidence-badge {
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .predicted-pest {
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+        }
+
+        .predicted-pest h3 {
+            color: #333;
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 0 0 10px 0;
+            text-transform: capitalize;
+        }
+
+        .severity {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin: 0;
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .pest-description, .prevention-advice, .treatment-advice, .other-predictions {
+            margin-bottom: 25px;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .pest-description h4, .prevention-advice h4, .treatment-advice h4, .other-predictions h4 {
+            color: #333;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0 0 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pest-description h4::before { content: "📝"; }
+        .prevention-advice h4::before { content: "🛡️"; }
+        .treatment-advice h4::before { content: "💊"; }
+        .other-predictions h4::before { content: "🔍"; }
+
+        .pest-description p {
+            color: #666;
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .prevention-advice ul, .treatment-advice ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .prevention-advice li, .treatment-advice li {
+            color: #666;
+            font-family: 'Poppins', sans-serif;
+            padding: 10px 0;
+            border-bottom: 1px solid #e9ecef;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .prevention-advice li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .treatment-advice li::before {
+            content: "💡";
+            position: absolute;
+            left: 0;
+        }
+
+        .prevention-advice li:last-child, .treatment-advice li:last-child {
+            border-bottom: none;
+        }
+
+        .prediction-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .prediction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .prediction-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .prediction-name {
+            color: #333;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .prediction-confidence {
+            color: #4CAF50;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            background: rgba(76, 175, 80, 0.1);
+            padding: 4px 12px;
+            border-radius: 15px;
+        }
+
+        .image-error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            margin: 20px 0;
+            border: 2px solid #ffcdd2;
+            box-shadow: 0 4px 15px rgba(198, 40, 40, 0.1);
+            display: none;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .pest-container {
+                padding: 10px;
+            }
+            
+            .pest-header h1 {
+                font-size: 2rem;
+            }
+            
+            .pest-detection-card {
+                padding: 20px;
+            }
+            
+            .upload-area {
+                padding: 40px 20px;
+            }
+            
+            .image-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .analyze-btn, .change-image-btn {
+                width: 100%;
+                max-width: 250px;
+            }
+            
+            .result-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .prediction-item {
+                flex-direction: column;
+                gap: 8px;
+                text-align: center;
+            }
+            
+            .predicted-pest h3 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-btn">← Back to Home</a>
+    
+    <div class="pest-container">
+        <div class="pest-header">
+            <h1>🐛 Pest & Disease Detection</h1>
+            <p>Upload an image of your plant to get AI-powered pest detection and treatment advice</p>
+        </div>
+
+        <div class="pest-detection-card">
+            <div class="upload-area" id="upload-area">
+                <div class="upload-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21,15 16,10 5,21"></polyline>
+                    </svg>
+                </div>
+                <h3>Upload Plant Image</h3>
+                <p>Take a photo or upload an image of your plant to detect pests and diseases</p>
+                <input type="file" id="image-upload" accept="image/*" capture="environment">
+                <button class="upload-btn" onclick="document.getElementById('image-upload').click()">Choose Image</button>
+            </div>
+            
+            <div class="image-preview" id="image-preview">
+                <img id="preview-img" src="" alt="Plant Image">
+                <div class="image-actions">
+                    <button id="analyze-btn" class="analyze-btn">🔍 Analyze Image</button>
+                    <button id="change-image-btn" class="change-image-btn">🔄 Change Image</button>
+                </div>
+            </div>
+            
+            <div class="loading-spinner" id="loading-spinner">
+                <div class="spinner"></div>
+                <p>Analyzing your image...</p>
+            </div>
+            
+            <div class="analysis-results" id="analysis-results">
+                <h3>Analysis Results</h3>
+                <div class="results-content" id="results-content">
+                    <!-- Results will be populated here -->
+                </div>
+            </div>
+            
+            <div id="image-error" class="image-error">
+                <p>Unable to analyze image. Please try again with a clearer photo.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get DOM elements
+        const imageUpload = document.getElementById('image-upload');
+        const uploadArea = document.getElementById('upload-area');
+        const imagePreview = document.getElementById('image-preview');
+        const previewImg = document.getElementById('preview-img');
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const changeImageBtn = document.getElementById('change-image-btn');
+        const analysisResults = document.getElementById('analysis-results');
+        const resultsContent = document.getElementById('results-content');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const imageError = document.getElementById('image-error');
+
+        // Handle image upload
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    uploadArea.style.display = 'none';
+                    imagePreview.style.display = 'block';
+                    hideError();
+                };
+                reader.readAsDataURL(file);
+            } else {
+                showError('Please select a valid image file.');
+            }
+        }
+
+        // Analyze uploaded image
+        async function analyzeImage() {
+            const file = imageUpload.files[0];
+            if (!file) {
+                showError('Please select an image first.');
+                return;
+            }
+
+            // Show loading spinner
+            loadingSpinner.style.display = 'block';
+            analysisResults.style.display = 'none';
+            hideError();
+
+            try {
+                // Convert image to base64
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    const base64Image = e.target.result;
+                    
+                    // Send to Flask API
+                    const response = await fetch('http://localhost:5000/api/pest-detection', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            image: base64Image
+                        })
+                    });
+
+                    const data = await response.json();
+                    
+                    // Hide loading spinner
+                    loadingSpinner.style.display = 'none';
+                    
+                    if (data.success) {
+                        displayAnalysisResults(data);
+                    } else {
+                        showError(data.error || 'Analysis failed');
+                    }
+                };
+                reader.readAsDataURL(file);
+                
+            } catch (error) {
+                console.error('Error analyzing image:', error);
+                loadingSpinner.style.display = 'none';
+                showError('Failed to connect to analysis service. Please make sure the Flask API is running.');
+            }
+        }
+
+        // Display analysis results
+        function displayAnalysisResults(data) {
+            const { predicted_pest, confidence, top3_predictions, advice } = data;
+            
+            const confidencePercent = Math.round(confidence * 100);
+            const severity = advice.severity;
+            const severityColor = getSeverityColor(severity);
+            
+            resultsContent.innerHTML = `
+                <div class="result-card">
+                    <div class="result-header">
+                        <h4>Detection Result</h4>
+                        <span class="confidence-badge" style="background-color: ${severityColor}">
+                            ${confidencePercent}% Confidence
+                        </span>
+                    </div>
+                    <div class="predicted-pest">
+                        <h3>${predicted_pest.charAt(0).toUpperCase() + predicted_pest.slice(1)}</h3>
+                        <p class="severity" style="color: ${severityColor}">
+                            Severity: ${severity.charAt(0).toUpperCase() + severity.slice(1)}
+                        </p>
+                    </div>
+                    <div class="pest-description">
+                        <h4>Description</h4>
+                        <p>${advice.description}</p>
+                    </div>
+                    <div class="prevention-advice">
+                        <h4>Prevention Tips</h4>
+                        <ul>
+                            ${advice.prevention.map(tip => `<li>${tip}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <div class="treatment-advice">
+                        <h4>Treatment Recommendations</h4>
+                        <ul>
+                            ${advice.treatment.map(tip => `<li>${tip}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <div class="other-predictions">
+                        <h4>Other Possible Matches</h4>
+                        <div class="prediction-list">
+                            ${top3_predictions.slice(1).map(pred => `
+                                <div class="prediction-item">
+                                    <span class="prediction-name">${pred.class}</span>
+                                    <span class="prediction-confidence">${Math.round(pred.confidence * 100)}%</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            analysisResults.style.display = 'block';
+        }
+
+        // Get severity color
+        function getSeverityColor(severity) {
+            switch (severity.toLowerCase()) {
+                case 'beneficial': return '#4CAF50';
+                case 'low': return '#FFC107';
+                case 'moderate': return '#FF9800';
+                case 'high': return '#F44336';
+                default: return '#9E9E9E';
+            }
+        }
+
+        // Show error
+        function showError(message) {
+            imageError.textContent = message;
+            imageError.style.display = 'block';
+        }
+
+        // Hide error
+        function hideError() {
+            imageError.style.display = 'none';
+        }
+
+        // Change image
+        function changeImage() {
+            uploadArea.style.display = 'block';
+            imagePreview.style.display = 'none';
+            analysisResults.style.display = 'none';
+            loadingSpinner.style.display = 'none';
+            hideError();
+            imageUpload.value = '';
+        }
+
+        // Event listeners
+        imageUpload.addEventListener('change', handleImageUpload);
+        analyzeBtn.addEventListener('click', analyzeImage);
+        changeImageBtn.addEventListener('click', changeImage);
+    </script>
+</body>
+</html>

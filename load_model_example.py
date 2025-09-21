@@ -1,134 +1,75 @@
-#!/usr/bin/env python3
 """
-Example script showing how to load your ML model with NPK features
-This script demonstrates the correct way to load your model for the crop advisory system
+Load model example - demonstrates how to load the pest detection model
 """
 
-import joblib
-import numpy as np
-import requests
-import json
+import tensorflow as tf
+import pickle
+import os
 
-def load_and_test_model():
-    """Load your model and test it with NPK data"""
-    
-    # Step 1: Load your saved model
+def load_pest_model():
+    """Load the pest detection model and return it"""
     try:
-        # Replace 'your_model.pkl' with your actual model file name
-        model = joblib.load('models/your_model.pkl')
-        print("✅ Model loaded successfully!")
-        
-        # Step 2: Check what features your model expects
-        if hasattr(model, 'feature_names_in_'):
-            print(f"📋 Model expects these features: {list(model.feature_names_in_)}")
+        model_path = 'models/pest_model.h5'
+        if os.path.exists(model_path):
+            model = tf.keras.models.load_model(model_path)
+            print("✅ Pest detection model loaded successfully")
+            return model
         else:
-            print("📋 Model feature names not available, but typically expects:")
-            print("   - soil_ph, nitrogen, phosphorus, potassium, temperature, humidity, rainfall")
-        
-        # Step 3: Prepare test data with NPK values
-        test_data = {
-            'soil_ph': 6.5,
-            'nitrogen': 50,      # mg/kg
-            'phosphorus': 30,    # mg/kg  
-            'potassium': 40,     # mg/kg
-            'temperature': 25,   # °C
-            'humidity': 70,      # %
-            'rainfall': 1200     # mm
-        }
-        
-        # Step 4: Convert to numpy array for prediction
-        # Make sure the order matches your model's training data
-        feature_values = [
-            test_data['soil_ph'],
-            test_data['nitrogen'],
-            test_data['phosphorus'], 
-            test_data['potassium'],
-            test_data['temperature'],
-            test_data['humidity'],
-            test_data['rainfall']
-        ]
-        
-        # Reshape for single prediction
-        X_test = np.array(feature_values).reshape(1, -1)
-        
-        # Step 5: Make prediction
-        prediction = model.predict(X_test)
-        print(f"🌱 Model prediction: {prediction[0]}")
-        
-        # If your model has probability predictions
-        if hasattr(model, 'predict_proba'):
-            probabilities = model.predict_proba(X_test)
-            print(f"📊 Prediction probabilities: {probabilities[0]}")
-        
-        return True
-        
-    except FileNotFoundError:
-        print("❌ Model file not found!")
-        print("   Please place your model file in the 'models/' directory")
-        print("   Example: models/crop_model.pkl")
-        return False
-        
+            print("❌ Model file not found at:", model_path)
+            return None
     except Exception as e:
         print(f"❌ Error loading model: {e}")
-        return False
+        return None
 
-def test_api_integration():
-    """Test the API integration with NPK data"""
-    
-    print("\n🧪 Testing API Integration...")
-    
-    # Test data with NPK values
-    test_data = {
-        "soilData": {
-            "soil_ph": 6.5,
-            "nitrogen": 50,
-            "phosphorus": 30,
-            "potassium": 40,
-            "temperature": 25,
-            "humidity": 70,
-            "rainfall": 1200,
-            "area": 1.0
-        },
-        "location": "Kerala",
-        "cropType": "rice"
-    }
-    
+def load_model_metadata():
+    """Load model metadata and return class names"""
     try:
-        # Test Node.js API
-        response = requests.post('http://localhost:8080/api/crop-advisory', json=test_data)
-        if response.status_code == 200:
-            print("✅ Node.js API working with NPK data!")
-            result = response.json()
-            print(f"   Location: {result.get('location')}")
-            print(f"   ML Prediction: {'Available' if result.get('mlPrediction') else 'Not available'}")
-        else:
-            print(f"❌ Node.js API error: {response.status_code}")
+        metadata_path = 'models/pest_model_metadata.pkl'
+        if os.path.exists(metadata_path):
+            with open(metadata_path, 'rb') as f:
+                metadata = pickle.load(f)
             
+            class_names = metadata.get('class_names', [
+                'aphid', 'armyworm', 'beetle', 'caterpillar', 'grasshopper',
+                'leafhopper', 'mite', 'thrips', 'whitefly', 'healthy'
+            ])
+            
+            print("✅ Model metadata loaded successfully")
+            print(f"Classes: {class_names}")
+            return class_names
+        else:
+            print("❌ Metadata file not found at:", metadata_path)
+            return None
     except Exception as e:
-        print(f"❌ API test failed: {e}")
+        print(f"❌ Error loading metadata: {e}")
+        return None
 
 def main():
-    """Main function"""
-    print("🚀 NPK Integration Test")
+    """Main function to demonstrate model loading"""
+    print("🚀 Loading Pest Detection Model")
     print("=" * 40)
     
-    # Test model loading
-    model_loaded = load_and_test_model()
+    # Load model
+    model = load_pest_model()
+    if model is None:
+        print("❌ Failed to load model")
+        return
     
-    if model_loaded:
-        print("\n✅ Your model is ready for NPK integration!")
-        print("\n📝 Next steps:")
-        print("   1. Make sure your model file is named 'crop_model.pkl'")
-        print("   2. Place it in the 'models/' directory")
-        print("   3. Start the Flask API: python app.py")
-        print("   4. Start the Node.js server: node server.js")
-        print("   5. Test the crop advisory form!")
-        
-        # Test API if servers are running
-        test_api_integration()
-    else:
-        print("\n⚠️  Please fix the model loading issues first")
+    # Load metadata
+    class_names = load_model_metadata()
+    if class_names is None:
+        print("❌ Failed to load metadata")
+        return
+    
+    # Display model summary
+    print("\n📊 Model Summary:")
+    print("-" * 20)
+    model.summary()
+    
+    print(f"\n🎯 Model loaded successfully!")
+    print(f"   Input shape: {model.input_shape}")
+    print(f"   Output shape: {model.output_shape}")
+    print(f"   Number of classes: {len(class_names)}")
 
 if __name__ == "__main__":
     main()
-
