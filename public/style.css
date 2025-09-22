@@ -490,7 +490,7 @@ body{
 
 .dropdown-options {
     position: absolute;
-    bottom: calc(100% + 5px);
+    top: calc(100% + 5px);
     left: 0;
     width: 100%;
     background: var(--bg-color);
@@ -501,7 +501,7 @@ body{
     opacity: 0;
     visibility: hidden;
     transform: scaleY(0.9);
-    transform-origin: bottom;
+    transform-origin: top;
     transition: all 0.25s ease;
 }
 
@@ -1462,7 +1462,8 @@ display: none !important;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    margin-top: 20px;
+    margin-top: 80px;
+    margin-left: 20px;
 }
 
 .back-btn:hover {
